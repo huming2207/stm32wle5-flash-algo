@@ -15,8 +15,8 @@ struct Algorithm {
 algorithm!(Algorithm, {
     flash_address: 0x08000000,
     flash_size: 0x40000,
-    page_size: 0x800,
-    empty_value: 0xFF,
+    page_size: 0x400,
+    empty_value: 0xff,
     sectors: [{
         size: 0x800,
         address: 0,
