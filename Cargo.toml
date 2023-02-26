@@ -7,8 +7,10 @@ version = "0.1.0"
 
 [dependencies]
 cortex-m = "0.7.0"
-flash-algorithm = { version = "0.3.0" }
+cortex-m-rt = "0.7.3"
+flash-algorithm = { git = "https://github.com/probe-rs/flash-algorithm.git" }
 rtt-target = { version = "0.3", features = ["cortex-m"] }
+stm32wlxx-hal = { version = "0.6.1", features = ["stm32wle5"]}
 
 # this lets you use `cargo fix`!
 [[bin]]
