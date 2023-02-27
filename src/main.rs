@@ -25,8 +25,10 @@ algorithm!(Algorithm, {
 
 impl FlashAlgorithm for Algorithm {
     fn new(_address: u32, _clock: u32, _function: Function) -> Result<Self, ErrorCode> {
-        rtt_init_print!();
-        rprintln!("Init");
+        #[cfg(debug_assertions)] {
+            rtt_init_print!();
+            rprintln!("Init");
+        }
 
         let mut dp = Peripherals::take().unwrap();
         let cs = unsafe { &CriticalSection::new() };
@@ -44,17 +46,19 @@ impl FlashAlgorithm for Algorithm {
     }
 
     fn erase_all(&mut self) -> Result<(), ErrorCode> {
+        #[cfg(debug_assertions)]
         rprintln!("Erase All");
 
         let mut flash = Flash::unlock(&mut self.dp.FLASH);
         let ret = unsafe { flash.mass_erase() };
         match ret {
             Ok(_) => return Ok(()),
-            Err(err) => return Err(ErrorCode::new(0x70d0).unwrap())
+            Err(_) => return Err(ErrorCode::new(0x70d0).unwrap())
         }
     }
 
     fn erase_sector(&mut self, addr: u32) -> Result<(), ErrorCode> {
+        #[cfg(debug_assertions)]
         rprintln!("Erase sector addr:0x{:04x}", addr);
 
         let mut flash = Flash::unlock(&mut self.dp.FLASH);
@@ -68,13 +72,14 @@ impl FlashAlgorithm for Algorithm {
         let ret = unsafe { flash.page_erase(page) };
         match ret {
             Ok(_) => return Ok(()),
-            Err(err) => {
+            Err(_) => {
                 return Err(ErrorCode::new(2).unwrap())
             }
         }
     }
 
     fn program_page(&mut self, addr: u32, data: &[u8]) -> Result<(), ErrorCode> {
+        #[cfg(debug_assertions)]
         rprintln!("Program Page addr:{} size:{}", addr, data.len());
 
         let mut flash = Flash::unlock(&mut self.dp.FLASH);
