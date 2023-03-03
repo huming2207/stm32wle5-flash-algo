@@ -1,9 +1,8 @@
-# Flash Algorithm Template
+# STM32WLE5xC Flash algorithm in Rust
 
-This is a flash algorithm template for writing CMSIS-Pack flash algorithms in Rust.
-It can be used to generate new flash algoritms for usage with `probe-rs`.
+Using template from [probe-rs's flash algorithm template](https://github.com/probe-rs/flash-algorithm-template)
 
-[![Actions Status](https://img.shields.io/github/actions/workflow/status/probe-rs/flash-algorithm-template/ci.yml?branch=master)](https://github.com/probe-rs/flash-algorithm-template/actions) [![chat](https://img.shields.io/badge/chat-probe--rs%3Amatrix.org-brightgreen)](https://matrix.to/#/#probe-rs:matrix.org)
+Tested & working with probe-rs or my [Soul Injector firmware programmer](https://github.com/huming2207/soul-injector)
 
 ## Dependencies
 
