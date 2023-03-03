@@ -6,10 +6,14 @@ use core::mem::MaybeUninit;
 use cortex_m::interrupt::CriticalSection;
 use flash_algorithm::*;
 use rtt_target::{rprintln, rtt_init_print};
-use stm32wlxx_hal::{pac::Peripherals, rcc, flash::{Flash, Page, AlignedAddr}};
+use stm32wlxx_hal::{
+    flash::{AlignedAddr, Flash, Page},
+    pac::Peripherals,
+    rcc,
+};
 
 struct Algorithm {
-    dp: Peripherals
+    dp: Peripherals,
 }
 
 algorithm!(Algorithm, {
@@ -25,7 +29,8 @@ algorithm!(Algorithm, {
 
 impl FlashAlgorithm for Algorithm {
     fn new(_address: u32, _clock: u32, _function: Function) -> Result<Self, ErrorCode> {
-        #[cfg(debug_assertions)] {
+        #[cfg(debug_assertions)]
+        {
             rtt_init_print!();
             rprintln!("Init");
         }
@@ -42,6 +47,15 @@ impl FlashAlgorithm for Algorithm {
             );
         }
 
+        // We are running at 16MHz, flash wait state is 0, and this algorithm is running at the RAM, so no caching needed
+        dp.FLASH.acr.write(|w| {
+            w.dcen().clear_bit();
+            w.icen().clear_bit();
+            w.prften().clear_bit();
+            w.dcrst().set_bit();
+            w.icrst().set_bit()
+        });
+
         Ok(Algorithm { dp })
     }
 
@@ -53,7 +67,7 @@ impl FlashAlgorithm for Algorithm {
         let ret = unsafe { flash.mass_erase() };
         match ret {
             Ok(_) => return Ok(()),
-            Err(_) => return Err(ErrorCode::new(0x70d0).unwrap())
+            Err(_) => return Err(ErrorCode::new(0x70d0).unwrap()),
         }
     }
 
@@ -72,9 +86,7 @@ impl FlashAlgorithm for Algorithm {
         let ret = unsafe { flash.page_erase(page) };
         match ret {
             Ok(_) => return Ok(()),
-            Err(_) => {
-                return Err(ErrorCode::new(2).unwrap())
-            }
+            Err(_) => return Err(ErrorCode::new(2).unwrap()),
         }
     }
 
@@ -85,13 +97,13 @@ impl FlashAlgorithm for Algorithm {
         let mut flash = Flash::unlock(&mut self.dp.FLASH);
         let addr = match AlignedAddr::try_from(addr) {
             Ok(addr) => addr,
-            Err(_) => return Err(ErrorCode::new(1).unwrap())
+            Err(_) => return Err(ErrorCode::new(1).unwrap()),
         };
 
         let ret = unsafe { flash.program_bytes(data, addr) };
         match ret {
             Ok(_) => return Ok(()),
-            Err(_) => return Err(ErrorCode::new(2).unwrap())
+            Err(_) => return Err(ErrorCode::new(2).unwrap()),
         }
     }
 }
