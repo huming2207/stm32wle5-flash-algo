@@ -16,6 +16,17 @@ struct Algorithm {
     dp: Peripherals,
 }
 
+#[repr(u32)]
+pub(crate) enum SoulMagicAddr {
+    MagicBase = 0xfffff000,
+    ReadDeviceUID = 0xfffff001,
+    RunTestBase = 0xfffff002,
+    RunTestMax = 0xfffffff0,
+}
+
+const SOUL_READ_DEV_UID: u32 = SoulMagicAddr::ReadDeviceUID as u32;
+const SOUL_RUN_TEST: u32 = SoulMagicAddr::RunTestBase as u32;
+
 algorithm!(Algorithm, {
     flash_address: 0x08000000,
     flash_size: 0x40000,
@@ -104,6 +115,18 @@ impl FlashAlgorithm for Algorithm {
         match ret {
             Ok(_) => return Ok(()),
             Err(_) => return Err(ErrorCode::new(2).unwrap()),
+        }
+    }
+
+    fn verify(&mut self, address: u32, size: u32, data: Option<&[u8]>) -> Result<(), ErrorCode> {
+        match address {
+            SOUL_READ_DEV_UID => {
+                return Ok(()); // TODO: do UID reading, copy to RAM region and return the address
+            },
+            SOUL_RUN_TEST => {
+                return Ok(()); // TODO: ?
+            },
+            _ => return Err(ErrorCode::new(1).unwrap()),
         }
     }
 }
