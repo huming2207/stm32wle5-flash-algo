@@ -8,7 +8,7 @@ version = "0.1.0"
 [dependencies]
 cortex-m = "0.7.0"
 cortex-m-rt = "0.7.3"
-flash-algorithm = { git = "https://github.com/probe-rs/flash-algorithm.git" }
+flash-algorithm = { git = "https://github.com/huming2207/flash-algorithm", rev = "680ba43bd49afdb37cd19279d30c1f06d13e1f19", features = ["erase-chip", "panic-handler", "verify"]}
 rtt-target = { version = "0.3", features = ["cortex-m"] }
 stm32wlxx-hal = { version = "0.6.1", features = ["stm32wle5"]}
 
